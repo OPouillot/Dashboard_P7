@@ -49,8 +49,7 @@ def main():
     if 'form_stat' not in st.session_state:
         st.session_state.form_stat = False
     
-    os.curdir
-    image = Image.open(os.curdir+'/pad.png')
+    image = Image.open(os.getcwd()+'/pad.png')
     col1, col2, col3 = st.columns(3)
     with col2:
         st.image(image)
