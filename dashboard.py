@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -49,10 +48,7 @@ def main():
     if 'form_stat' not in st.session_state:
         st.session_state.form_stat = False
 
-    st.write(os.listdir('.'))
-    path = os.path.dirname(__file__)
-    my_file = path+'/pad.PNG'
-    image = Image.open(my_file)
+    image = Image.open('./pad.PNG')
     col1, col2, col3 = st.columns(3)
     with col2:
         st.image(image)
