@@ -1,7 +1,3 @@
-"""
-# My first app
-Here's our first attempt at using data to create a table:
-"""
 
 import streamlit as st
 import pandas as pd
@@ -23,21 +19,23 @@ def submission():
 
 def get_customer(id: int):
     """ Appel de l'API pour récupérer les informations et prédictions d'un client par son id """
-    url = f"http://127.0.0.1:8000/customer/?id={id}"
+    url = f"https://apip7oc.azurewebsites.net/customer/?id={id}"
     response = requests.get(url)
     return response
 
 
-def get_group(target: int, arr_features: list[str]):
+def get_group(feature: str):
     """ Appel de l'API pour récupérer les features données en entrée pour 1500 clients aléatoire de chaque groupe de prédiction
     (3000 clients au total) """
-    str_features = ""
-    for feature in arr_features:
-        str_features = str_features + f"&arr_features={feature}"
-    url = f"http://127.0.0.1:8000/group/?{str_features}"
+    url = f"https://apip7oc.azurewebsites.net/group/?feature={feature}"
     response = requests.get(url)
     return response
 
+def get_shap():
+    """ Appel de l'API pour récupérer les features importance du modèle """
+    url = f"https://apip7oc.azurewebsites.net/shap/"
+    response = requests.get(url)
+    return response
 
 def extract_info(sub_dict):
     """ Extrait la dernière partie du nom après "_" pour des features OneHotEncoder """
@@ -123,38 +121,50 @@ def main():
 
             # ENSEMBLE CLIENTS
             with tab3:
-                # Récupération des 3000 clients échantillons
-                group = get_group(0, ["DAYS_BIRTH", "DAYS_EMPLOYED", "AMT_INCOME_TOTAL", "y_pred"])
+                    col1, col2 = st.columns(2)
+                    # FEATURES IMPORTANCE
+                    with col1:
+                        st.subheader("Importance des données du client dans l'attribution du prêt")
+                        shap = get_shap()
+                        if shap.status_code == 200:
+                            feat_imp = shap.json()['features_importance']
+                            # Mise en forme des données
+                            feature_scores = pd.DataFrame(feat_imp, columns=['feat'], index=infos.keys()).sort_values(by="feat", ascending=False)
+                            important_features = feature_scores[:10].sort_values(by='feat', ascending=True)
 
-                if group.status_code == 200:
-                    customers = pd.DataFrame(group.json())
+                            chart_imp = px.bar(important_features, x='feat', y=important_features.index)
+                            chart_imp.update_layout(xaxis_title="Importance", yaxis_title="Features")
+                            st.plotly_chart(chart_imp, use_container_width=True)
+                        else:
+                            st.warning(" Un problème est survenu !\n\nCode Erreur : "+ str(group.status_code), icon="🤖")
 
-                    # Conversion jours passés en années
-                    customers['AGE'] = customers['DAYS_BIRTH'].abs() // 365
-                    customers['WORK_YEARS'] = customers['DAYS_EMPLOYED'].abs() // 365
-                    
-                    feature = st.selectbox('Element à comparer', ('AGE', 'WORK_YEARS', 'AMT_INCOME_TOTAL'))
-                    
-                    # Mise en forme des données
-                    data_chart = [customers[feature].loc[customers["y_pred"]==0], customers[feature].loc[customers["y_pred"]==1]]
-                    group_labels = ['Solvable', 'A risque']
+                    # COMPARAISON CLIENTS
+                    with col2:
+                        st.subheader("Comparaison des groupes d'attribution de prêt")
+                        feature = st.selectbox('Element à comparer', ('DAYS_EMPLOYED', 'AMT_INCOME_TOTAL'))
+                        # Récupération de la feature pour les clients
+                        group = get_group(feature)
 
-                    # Définition du nombre de bins en fonction du nombre de valeurs uniques
-                    unique_values = len(customers[feature].unique())
-                    bin_count = unique_values*100 if unique_values > 100 else 1
+                        if group.status_code == 200 :
+                            feat_data = pd.DataFrame(group.json())
+                            # Mise en forme des données
+                            data_chart = [feat_data["feature"].loc[feat_data["y_pred"]==0], feat_data["feature"].loc[feat_data["y_pred"]==1]]
+                            group_labels = ['Solvable', 'A risque']
 
-                    # Création du displot avec bin_size adaptatif
-                    chart = ff.create_distplot(data_chart,
-                                               group_labels,
-                                               bin_size=bin_count)
-                    chart.update_layout(title=f'Distribution des clients par "{feature}"',
-                                        xaxis_title=feature, yaxis_title='Nombre de personnes')
+                            # Définition du nombre de bins en fonction du nombre de valeurs uniques
+                            unique_values = len(feat_data["feature"].unique())
+                            bin_count = unique_values*100 if unique_values > 100 else 1
 
-                    st.write(f"Echantillon équilibré de {len(customers)} clients")
-                    st.plotly_chart(chart, use_container_width=True)
+                            # Création du displot avec bin_size adaptatif
+                            chart = ff.create_distplot(data_chart,
+                                                    group_labels,
+                                                    bin_size=bin_count)
+                            chart.update_layout(title=f'Distribution des clients par "{feature}"',
+                                                xaxis_title=feature, yaxis_title='Nombre de personnes')
+                            st.plotly_chart(chart, use_container_width=True)
 
-                else:
-                    st.warning(" Un problème est survenu !\n\nCode Erreur : "+ str(group.status_code), icon="🤖")
+                        else:
+                            st.warning(" Un problème est survenu !\n\nCode Erreur : "+ str(group.status_code), icon="🤖")
         else:
             st.warning(" Un problème est survenu !\n\nCode Erreur : "+ str(response.status_code), icon="🤖")
 
