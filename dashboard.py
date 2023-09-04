@@ -51,7 +51,7 @@ def main():
 
     st.write(os.listdir('.'))
     path = os.path.dirname(__file__)
-    my_file = path+'/pad.png'
+    my_file = path+'/pad.PNG'
     image = Image.open(my_file)
     col1, col2, col3 = st.columns(3)
     with col2:
