@@ -37,6 +37,7 @@ jobs:
             git config --local user.name "Github Actions"
       - name: Merge master back to dev
         run: |
+            git fetch --unshallow
             git checkout main
             git merge updates -m "Auto-merge updates to main"
             git push
