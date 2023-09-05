@@ -1,10 +1,10 @@
 name: Python test before streamlit deploy
 
 on:
-push:
-  branches:
-    - updates
-workflow_dispatch:
+  push:
+    branches:
+      - updates
+  workflow_dispatch:
 
 jobs:
   build:
