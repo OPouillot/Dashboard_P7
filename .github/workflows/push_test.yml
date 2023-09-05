@@ -30,7 +30,6 @@ jobs:
           pip install pytest
           python -m pytest tests
         
-    steps:
       - uses: actions/checkout@v2
       - name: Set Git config
         run: |
