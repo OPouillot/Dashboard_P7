@@ -22,7 +22,6 @@ def get_customer(id: int):
     response = requests.get(url)
     return response
 
-
 def get_group(feature: str):
     """ Appel de l'API pour récupérer les features données en entrée pour 1500 clients aléatoire de chaque groupe de prédiction
     (3000 clients au total) """
@@ -42,6 +41,7 @@ def extract_info(sub_dict):
         if sub_dict[key] == 1:
             return key.split("_")[-1]
     return None
+
 
 def main():
 
