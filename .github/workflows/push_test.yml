@@ -29,9 +29,17 @@ jobs:
         run: |
           pip install pytest
           python -m pytest tests
-
-      - name: Merge to main
+          
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Git config
         run: |
-          git checkout main
-          git merge updates
-          git push origin main
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
+      - name: Merge master back to dev
+        run: |
+            git fetch --unshallow
+            git checkout dev
+            git pull
+            git merge --no-ff master -m "Auto-merge master back to dev"
+            git push
