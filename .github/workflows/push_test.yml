@@ -1,9 +1,9 @@
-name: Python test before streamlit deploy
+name: Build, Test, and Merge
 
 on:
   push:
     branches:
-      - main
+      - updates
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Python version
         uses: actions/setup-python@v1
         with:
@@ -30,4 +29,9 @@ jobs:
         run: |
           pip install pytest
           python -m pytest tests
+        
+      - uses: actions/checkout@v3
+      # Make changes to pull request here
 
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
