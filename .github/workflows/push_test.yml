@@ -42,7 +42,9 @@ jobs:
           body: "This pull request was automatically generated when tests passed."
 
       - name: Merge Pull Request
-        uses: peter-evans/enable-pull-request-automerge@v3
+        uses: juliangruber/merge-pull-request-action@v1
         with:
-          token: ${{ secrets.MERGE_TOKEN }}
-          pull-request-number: 1
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: 1
+          method: squash # merge rebase
+          repo: OPouillot/Dashboard_P7
