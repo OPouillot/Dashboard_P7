@@ -30,8 +30,7 @@ jobs:
           pip install pytest
           python -m pytest tests
         
-            - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       # Make changes to pull request here
 
       - name: Create Pull Request
