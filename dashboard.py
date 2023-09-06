@@ -129,7 +129,7 @@ def main():
                             feat_imp = shap.json()['features_importance']
                             # Mise en forme des données
                             feature_scores = pd.DataFrame(feat_imp, columns=['feat'], index=infos.keys()).sort_values(by="feat", ascending=False)
-                            important_features = feature_scores[:10].sort_values(by='feat', ascending=True)
+                            important_features = feature_scores[:15].sort_values(by='feat', ascending=True)
 
                             chart_imp = px.bar(important_features, x='feat', y=important_features.index)
                             chart_imp.update_layout(xaxis_title="Importance", yaxis_title="Features")
