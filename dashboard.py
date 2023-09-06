@@ -53,7 +53,7 @@ def main():
     with col2:
         st.image(image)
         
-    st.title("Dashboard client - Test de Déploiement updates")
+    st.title("Dashboard client")
 
     # Formulaire simple pour récupération id client
     with st.form("custom_infos"):
