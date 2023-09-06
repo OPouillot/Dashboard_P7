@@ -1,10 +1,11 @@
-name: Python test before streamlit deploy
+name: Build, Test, and Merge
 
 on:
   push:
     branches:
-      - main
+      - updates
   workflow_dispatch:
+
 
 jobs:
   build:
@@ -12,7 +13,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Python version
         uses: actions/setup-python@v1
         with:
@@ -31,3 +31,16 @@ jobs:
           pip install pytest
           python -m pytest tests
 
+  merge-branch:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge updates -> main
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: main
+          message: Merge updates into main
+          github_token: ${{ secrets.MERGE_TOKEN }}
