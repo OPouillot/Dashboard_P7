@@ -29,7 +29,8 @@ jobs:
         run: |
           pip install pytest
           python -m pytest tests
-        
+
+      - uses: actions/checkout@v3
       # Ajout de l'action pour créer une pull request
       - name: Create Pull Request
         if: success() # Exécutez seulement si les tests réussissent
