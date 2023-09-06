@@ -30,21 +30,16 @@ jobs:
           pip install pytest
           python -m pytest tests
 
-      # Ajout de l'action pour créer une pull request
-      - name: Create Pull Request
-        if: success() # Exécutez seulement si les tests réussissent
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.MERGE_TOKEN }}
-          branch: updates
-          base: main
-          title: "Automatically generated PR from updates branch"
-          body: "This pull request was automatically generated when tests passed."
+  merge-branch:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
 
-      - name: Merge Pull Request
-        uses: juliangruber/merge-pull-request-action@v1
+      - name: Merge updates -> main
+        uses: devmasx/merge-branch@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: 1
-          method: squash # merge rebase
-          repo: OPouillot/Dashboard_P7
+          type: now
+          target_branch: main
+          message: Merge updates into main
+          github_token: ${{ secrets.MERGE_TOKEN }}
