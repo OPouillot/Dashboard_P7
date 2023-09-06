@@ -29,9 +29,17 @@ jobs:
         run: |
           pip install pytest
           python -m pytest tests
-        
-      - uses: actions/checkout@v3
-      # Make changes to pull request here
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+  merge-branch:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge updates -> main
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: main
+          message: Merge updates into main
+          github_token: ${{ secrets.MERGE_TOKEN }}
