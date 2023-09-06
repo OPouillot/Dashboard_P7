@@ -30,7 +30,6 @@ jobs:
           pip install pytest
           python -m pytest tests
 
-      - uses: actions/checkout@v3
       # Ajout de l'action pour créer une pull request
       - name: Create Pull Request
         if: success() # Exécutez seulement si les tests réussissent
@@ -43,7 +42,7 @@ jobs:
           body: "This pull request was automatically generated when tests passed."
 
       - name: Merge Pull Request
-      - uses: peter-evans/enable-pull-request-automerge@v3
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.MERGE_TOKEN }}
           pull-request-number: 1
