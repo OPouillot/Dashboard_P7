@@ -31,7 +31,7 @@ def get_group(feature: str):
 
 def get_shap():
     """ Appel de l'API pour récupérer les features importance du modèle """
-    url = f"https://apip7oc.azurewebsites.net/shap/"
+    url = f"https://apip7oc.azurewebsites.net/feat_imp/"
     response = requests.get(url)
     return response
 
